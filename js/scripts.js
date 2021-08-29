@@ -2,7 +2,8 @@ const gallery = document.getElementById('gallery');
 const searchFld = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-submit');
 // store randomized user data for re-use
-let usersData = [], filteredUsers = [], hasRun = false;
+let usersData = [], filteredUsers = []; 
+let hasRun = false, hasModal = false;
 
 /**
  * Helper that provides error handling for our api call
@@ -16,15 +17,19 @@ const checkStatus = (res) => {
    return Promise.reject(new Error(res.statusText));
 };
 
-// Fetches 12 randomized users data from randomuser api
-fetch('https://randomuser.me/api/?nat=us&results=12')
+// Fetches 12 randomized users data from randomuser api on load
+fetch('https://randomuser.me/api/?nat=au,ca,gb,us&results=12')
    .then(checkStatus)
-   // convert to json
    .then(res => res.json())
    .then(data => populateGallery(data.results))
    .catch(err => console.log('Looks like there was a problem...', err));
 
+/**
+ * Helper used to re-populate gallery with filtered results
+ * @param {String} search - name entered in search field 
+ */
 const filterBySearch = (search) => {
+   // Case-sensitive (for now)
    filteredUsers = usersData.filter(user => {
       const fullName = `${user.name.first} ${user.name.last}`;
       const isMatch = user.name.first === search ||
@@ -84,14 +89,20 @@ const formatAddress = (address) => {
    return `${number} ${name}, ${city}, ${state}, ${zip}`;
 }
 
+// formats into xx/xx/xxxx
 const formatBirthDay = (bday) => {
    const month = bday.substring(5, 7),
    day = bday.substring(8, 10),
    year = bday.substring(0, 4);
    return `${month}/${day}/${year}`;
-}
+};
 
 const createModal = (data) => {
+   if (hasModal) {
+      // global flag indicates whether modal is present
+      gallery.querySelector('.modal-container').remove();
+      hasModal = false;
+   }
    const phoneNum = formatPhoneNumber(data.cell),
    address = formatAddress(data.location),
    birthDay = formatBirthDay(data.dob.date);
@@ -110,17 +121,51 @@ const createModal = (data) => {
               <p class="modal-text">Birthday: ${birthDay}</p>
             </div>
          </div>
+         <div class="modal-btn-container">
+            <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+            <button type="button" id="modal-next" class="modal-next btn">Next</button>
+         </div>
       </div>`;
-      
-   gallery.insertAdjacentHTML('beforeend', html);
-   const modal = gallery.querySelector('.modal-container');
-   const modalClose = modal.querySelector('#modal-close-btn');
-   modalClose.addEventListener('click', () => {
-      modal.remove();
-   });
-}
 
-// Event Listener(s)
+   gallery.insertAdjacentHTML('beforeend', html);
+   // set flag
+   hasModal = true;
+   // set event listeners
+   attachModalListeners(data);
+};
+
+/**
+ * Helper for re-attaching listeners for each new modal
+ * @param {Array} data - stored users data
+ */
+const attachModalListeners = (data) => {
+   let idx = usersData.indexOf(data);
+   const container = gallery.querySelector('.modal-container');
+   const modalClose = container.querySelector('#modal-close-btn');
+   const nextBtn = container.querySelector('#modal-next');
+   const prevBtn = container.querySelector('#modal-prev');
+   // modal event listeners
+   nextBtn.addEventListener('click', () => {
+      if (idx < usersData.length - 1) {
+         idx++;
+         data = usersData[idx];
+         createModal(data);
+      }
+   });
+   prevBtn.addEventListener('click', () => {
+      if (idx > 0) {
+         idx--;
+         data = usersData[idx];
+         createModal(data);
+      }
+   });
+   modalClose.addEventListener('click', () => {
+      container.remove();
+      hasModal = false;
+   });
+};
+
+// Page Event Listener(s)
 searchBtn.addEventListener('click', () => {
    const searchTerm = searchFld.value;
    // clear out exisiting gallery
