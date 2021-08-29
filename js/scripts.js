@@ -1,6 +1,8 @@
 const gallery = document.getElementById('gallery');
-
-let usersData = [];
+const searchFld = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-submit');
+// store randomized user data for re-use
+let usersData = [], filteredUsers = [], hasRun = false;
 
 /**
  * Helper that provides error handling for our api call
@@ -15,13 +17,22 @@ const checkStatus = (res) => {
 };
 
 // Fetches 12 randomized users data from randomuser api
-fetch('https://randomuser.me/api/?results=12')
+fetch('https://randomuser.me/api/?nat=us&results=12')
    .then(checkStatus)
    // convert to json
    .then(res => res.json())
    .then(data => populateGallery(data.results))
    .catch(err => console.log('Looks like there was a problem...', err));
 
+const filterBySearch = (search) => {
+   filteredUsers = usersData.filter(user => {
+      const fullName = `${user.name.first} ${user.name.last}`;
+      const isMatch = user.name.first === search ||
+         user.name.last === search || fullName === search;
+      return isMatch;
+   });
+   populateGallery(filteredUsers);
+}
 /**
  * Helper that generates HTML template w/data
  * @param {Object} data - info for each user 
@@ -47,13 +58,43 @@ const createCard = data => {
  * @param {String} cards - HTML template string 
  */
 const populateGallery = (cards) => {
-   // store results into global var for retrieval
-   usersData = cards;
-   console.log(usersData)
+   // store results into global var (only on first load)
+   if (!hasRun) {
+      usersData = cards;
+      hasRun = true;
+   }
    cards.map(card => gallery.insertAdjacentHTML('beforeend', createCard(card)));
 };
 
+// Formatting helper methods
+const formatPhoneNumber = (phone) => {
+   const phoneNum = phone.replace(/-|\(|\)|\s/g, ''),
+   areaCode = `(${phoneNum.substring(0,3)})`,
+   firstThree = `${phoneNum.substring(3,6)}`,
+   lastFour = `${phoneNum.substring(6,10)}`;
+   return `${areaCode} ${firstThree}-${lastFour}`;
+}
+
+const formatAddress = (address) => {
+   const number = address.street.number,
+   name = address.street.name,
+   city = address.city,
+   state = address.state,
+   zip = address.postcode;
+   return `${number} ${name}, ${city}, ${state}, ${zip}`;
+}
+
+const formatBirthDay = (bday) => {
+   const month = bday.substring(5, 7),
+   day = bday.substring(8, 10),
+   year = bday.substring(0, 4);
+   return `${month}/${day}/${year}`;
+}
+
 const createModal = (data) => {
+   const phoneNum = formatPhoneNumber(data.cell),
+   address = formatAddress(data.location),
+   birthDay = formatBirthDay(data.dob.date);
    const html = 
       `<div class="modal-container">
          <div class="modal">
@@ -64,12 +105,13 @@ const createModal = (data) => {
               <p class="modal-text">${data.email}</p>
               <p class="modal-text cap">${data.location.city}</p>
               <hr>
-              <p class="modal-text">(555) 555-5555</p>
-              <p class="modal-text">123 Portland Ave., Portland, OR 97204</p>
-              <p class="modal-text">Birthday: 10/21/2015</p>
+              <p class="modal-text">${phoneNum}</p>
+              <p class="modal-text">${address}</p>
+              <p class="modal-text">Birthday: ${birthDay}</p>
             </div>
          </div>
       </div>`;
+      
    gallery.insertAdjacentHTML('beforeend', html);
    const modal = gallery.querySelector('.modal-container');
    const modalClose = modal.querySelector('#modal-close-btn');
@@ -77,6 +119,16 @@ const createModal = (data) => {
       modal.remove();
    });
 }
+
+// Event Listener(s)
+searchBtn.addEventListener('click', () => {
+   const searchTerm = searchFld.value;
+   // clear out exisiting gallery
+   while (gallery.firstChild) {
+      gallery.removeChild(gallery.firstChild);
+   }
+   searchTerm ? filterBySearch(searchTerm) : populateGallery(usersData);
+});
 
 gallery.addEventListener('click', e => {
    let targetClass = e.target.className.substring(0, 4);
