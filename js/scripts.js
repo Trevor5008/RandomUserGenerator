@@ -1,5 +1,7 @@
 const gallery = document.getElementById('gallery');
 
+let usersData = [];
+
 /**
  * Helper that provides error handling for our api call
  * @param {Promise} res - Response from our fetch 
@@ -45,35 +47,59 @@ const createCard = data => {
  * @param {String} cards - HTML template string 
  */
 const populateGallery = (cards) => {
+   // store results into global var for retrieval
+   usersData = cards;
+   console.log(usersData)
    cards.map(card => gallery.insertAdjacentHTML('beforeend', createCard(card)));
 };
 
 const createModal = (data) => {
    const html = 
       `<div class="modal-container">
-      <div class="modal">
-          <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-          <div class="modal-info-container">
-              <img class="modal-img" src="https://placehold.it/125x125" alt="profile picture">
-              <h3 id="name" class="modal-name cap">name</h3>
-              <p class="modal-text">email</p>
-              <p class="modal-text cap">city</p>
+         <div class="modal">
+            <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+            <div class="modal-info-container">
+              <img class="modal-img" src="${data.picture.medium}" alt="profile picture">
+              <h3 id="name" class="modal-name cap">${data.name.first} ${data.name.last}</h3>
+              <p class="modal-text">${data.email}</p>
+              <p class="modal-text cap">${data.location.city}</p>
               <hr>
               <p class="modal-text">(555) 555-5555</p>
               <p class="modal-text">123 Portland Ave., Portland, OR 97204</p>
               <p class="modal-text">Birthday: 10/21/2015</p>
-          </div>
+            </div>
+         </div>
       </div>`;
-      return html
+   gallery.insertAdjacentHTML('beforeend', html);
+   const modal = gallery.querySelector('.modal-container');
+   const modalClose = modal.querySelector('#modal-close-btn');
+   modalClose.addEventListener('click', () => {
+      modal.remove();
+   });
 }
 
 gallery.addEventListener('click', e => {
-   let image, name, email, city, cell, address, bday; 
-   if (e.target.className === 'card') {
-      console.log(e.target.querySelector('h3').textContent)
-   } else if (e.target.parentNode.className === 'card') {
-      console.log(e.target.parentNode.querySelector('h3').textContent)
-   } else if (e.target.parentNode.parentNode.className === 'card') {
-      console.log(e.target.parentNode.parentNode.querySelector('h3').textContent)
+   let targetClass = e.target.className.substring(0, 4);
+   if (targetClass === 'card') {
+      let target, data; 
+      if (e.target.className === 'card') {
+         target = e.target;
+      } else if (e.target.parentNode.className === 'card') {
+         target = e.target.parentNode;
+      } else if (e.target.parentNode.parentNode.className === 'card') {
+         target = e.target.parentNode.parentNode;
+      } 
+      // name of target stored as identifier for retrieval
+      let name = target.querySelector('h3').textContent;
+      for (let i = 0; i < usersData.length; i++) {
+         let first = usersData[i].name.first;
+         let last = usersData[i].name.last;
+         let firstAndLast = `${first} ${last}`;
+         if (firstAndLast === name) {
+            data = usersData[i];
+            break;
+         }
+      }
+      createModal(data);
    } 
-})
+});
