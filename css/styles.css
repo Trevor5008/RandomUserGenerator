@@ -16,7 +16,7 @@ html, body {
 body {
     font-family: "Nunito", sans-serif;
     text-align: center;
-    background: content-box radial-gradient(rgb(247, 244, 245), rgba(168, 203, 243, 0.644));
+    background: radial-gradient(rgb(247, 244, 245), rgba(168, 203, 243, 0.644));
 }
 
 header {

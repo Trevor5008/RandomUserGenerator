@@ -29,11 +29,11 @@ fetch('https://randomuser.me/api/?nat=au,ca,gb,us&results=12')
  * @param {String} search - name entered in search field 
  */
 const filterBySearch = (search) => {
-   // Case-sensitive (for now)
+   search = search.toLowerCase();
    filteredUsers = usersData.filter(user => {
-      const fullName = `${user.name.first} ${user.name.last}`;
-      const isMatch = user.name.first === search ||
-         user.name.last === search || fullName === search;
+      const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+      const isMatch = user.name.first.toLowerCase() === search ||
+         user.name.last.toLowerCase() === search || fullName === search;
       return isMatch;
    });
    if (filteredUsers.length > 0) {
