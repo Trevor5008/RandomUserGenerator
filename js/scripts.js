@@ -36,7 +36,11 @@ const filterBySearch = (search) => {
          user.name.last === search || fullName === search;
       return isMatch;
    });
-   populateGallery(filteredUsers);
+   if (filteredUsers.length > 0) {
+      populateGallery(filteredUsers);
+   } else {
+      gallery.insertAdjacentHTML('beforeend', `<h3>No Results Found...</h3>`)
+   }
 }
 /**
  * Helper that generates HTML template w/data
@@ -50,7 +54,7 @@ const createCard = data => {
             <img class="card-img" src="${data.picture.thumbnail}" alt="profile picture">
          </div>
          <div class="card-info-container">
-            <h3 id="name" class="card-name cap">${data.name.first} ${data.name.last}</h3>
+            <h3 id="name" class="card-name cap"><span class="awesome">${data.name.first} ${data.name.last}</span></h3>
                <p class="card-text">${data.email}</p>
                <p class="card-text cap">${data.location.city}, ${data.location.state}</p>
          </div>
@@ -112,18 +116,18 @@ const createModal = (data) => {
             <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
             <div class="modal-info-container">
               <img class="modal-img" src="${data.picture.medium}" alt="profile picture">
-              <h3 id="name" class="modal-name cap">${data.name.first} ${data.name.last}</h3>
+              <h3 id="name" class="modal-name cap"><span class="awesome">${data.name.first} ${data.name.last}</span></h3>
               <p class="modal-text">${data.email}</p>
               <p class="modal-text cap">${data.location.city}</p>
               <hr>
               <p class="modal-text">${phoneNum}</p>
               <p class="modal-text">${address}</p>
               <p class="modal-text">Birthday: ${birthDay}</p>
-            </div>
-         </div>
-         <div class="modal-btn-container">
-            <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-            <button type="button" id="modal-next" class="modal-next btn">Next</button>
+              </div>
+              <div class="modal-btn-container">
+                 <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+                 <button type="button" id="modal-next" class="modal-next btn">Next</button>
+              </div>
          </div>
       </div>`;
 

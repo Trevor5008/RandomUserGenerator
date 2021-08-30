@@ -1,7 +1,7 @@
 /* ===================================== 
    Public API Request
 ======================================== */
-
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
 * {
@@ -16,11 +16,23 @@ html, body {
 body {
     font-family: "Nunito", sans-serif;
     text-align: center;
-    background: rgba(235, 235, 235, 0.9);
+    background: content-box radial-gradient(rgb(247, 244, 245), rgba(168, 203, 243, 0.644));
 }
 
 header {
     padding: 15px 5px 5px;
+}
+
+.awesome {
+   font-family: 'Permanent Marker', cursive;
+}
+
+.card .awesome {
+   color:rgba(0, 0, 0, 0.75)
+}
+
+#awesome-name {
+   color: rgb(231, 56, 108)
 }
 
 .header-inner-container {
@@ -40,10 +52,13 @@ header h1 {
     border-radius: 0.25rem 0 0 0.25rem ;
     max-width: 20rem;
     transition: .4s ease-out;
+    font-family: 'Permanent Marker', cursive;
 }
 
 .search-input:active, .search-input:hover, .search-input:focus {
     border: 1px solid rgba(50, 50, 50, 0.9);
+    transform: scale(1.025);
+    transition: .4s ease-in-out;
 }
 
 .search-submit {
@@ -90,6 +105,12 @@ header h1 {
     border: 1px solid rgba(50, 50, 50, 0.3);
     transition: .4s ease-out;
     overflow: hidden;
+}
+
+.card:hover {
+   transition: .4s ease-out;
+   transform: scale(1.1);
+   filter: drop-shadow(15px 10px 5px #373744);
 }
 
 .card-img {
@@ -142,6 +163,7 @@ header h1 {
     border-radius: 0.25em;
     border: 1px solid rgba(100, 100, 100, 0.3);
     transition: .4s ease-out;
+    filter: drop-shadow(20px 20px 4px #252525);
 }
 
 .modal-close-btn {
@@ -163,11 +185,13 @@ header h1 {
 
 .modal-name {
     margin-bottom: 5px;
+    font-size: x-large;
 }
 
 .modal-text {
     color: rgba(50, 50, 50, 0.7);
     margin: 10px;
+    font-family: cursive;
 }
 
 .modal hr {
@@ -202,6 +226,13 @@ header h1 {
     border-radius: 0.35em;
     transition: .4s ease-out;
   }
+
+  .modal-close-btn:hover,
+  .modal-img:hover,
+  .modal-btn-container .btn:hover {
+     transition: .5s ease-in-out;
+     transform: scale(1.1);
+  }
   
 
 /* ===================================== 
@@ -231,7 +262,7 @@ header h1 {
     }
 
     .modal {
-        margin-top: 100px;
+        margin-top: 5vh;
     }
 }
 
