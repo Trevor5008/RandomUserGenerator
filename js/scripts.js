@@ -116,18 +116,20 @@ const createModal = (data) => {
             <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
             <div class="modal-info-container">
               <img class="modal-img" src="${data.picture.medium}" alt="profile picture">
-              <h3 id="name" class="modal-name cap"><span class="awesome">${data.name.first} ${data.name.last}</span></h3>
+              <h3 id="name" class="modal-name cap">
+                <span class="awesome">${data.name.first} ${data.name.last}</span>
+              </h3>
               <p class="modal-text">${data.email}</p>
               <p class="modal-text cap">${data.location.city}</p>
               <hr>
               <p class="modal-text">${phoneNum}</p>
               <p class="modal-text">${address}</p>
               <p class="modal-text">Birthday: ${birthDay}</p>
-              </div>
-              <div class="modal-btn-container">
-                 <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-                 <button type="button" id="modal-next" class="modal-next btn">Next</button>
-              </div>
+            </div>
+            <div class="modal-btn-container">
+               <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+               <button type="button" id="modal-next" class="modal-next btn">Next</button>
+            </div>
          </div>
       </div>`;
 
@@ -180,16 +182,20 @@ searchBtn.addEventListener('click', () => {
 });
 
 gallery.addEventListener('click', e => {
-   let targetClass = e.target.className.substring(0, 4);
-   if (targetClass === 'card') {
+   const isCard = e.target.className.substring(0, 4) === 'card';
+   let className = e.target.className;
+   if (isCard || e.target.className === 'awesome') {
       let target, data; 
-      if (e.target.className === 'card') {
+      if (className === 'card') {
          target = e.target;
-      } else if (e.target.parentNode.className === 'card') {
+      } else if (className === 'card-info-container' || className === 'card-img-container') {
          target = e.target.parentNode;
-      } else if (e.target.parentNode.parentNode.className === 'card') {
+      } else if (className === 'card-img' || className === 'card-text'
+         || className === 'card-text cap') {
          target = e.target.parentNode.parentNode;
-      } 
+      } else if (className === 'awesome') {
+         target = e.target.parentNode.parentNode;
+      }
       // name of target stored as identifier for retrieval
       let name = target.querySelector('h3').textContent;
       for (let i = 0; i < usersData.length; i++) {
