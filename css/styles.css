@@ -191,7 +191,7 @@ header h1 {
 .modal-text {
     color: rgba(50, 50, 50, 0.7);
     margin: 10px;
-    font-family: cursive;
+    font-weight: 600;
 }
 
 .modal hr {
