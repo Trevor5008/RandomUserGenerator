@@ -31,10 +31,11 @@ fetch('https://randomuser.me/api/?nat=au,ca,gb,us&results=12')
 const filterBySearch = (search) => {
    search = search.toLowerCase();
    filteredUsers = usersData.filter(user => {
-      const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
-      const isMatch = user.name.first.toLowerCase() === search ||
-         user.name.last.toLowerCase() === search || fullName === search;
-      return isMatch;
+      let userName = `${user.name.first} ${user.name.last}`.toLowerCase();
+      // const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+      // const isMatch = user.name.first.toLowerCase() === search ||
+      //    user.name.last.toLowerCase() === search || fullName === search;
+      return userName.includes(search);
    });
    if (filteredUsers.length > 0) {
       populateGallery(filteredUsers);
@@ -171,15 +172,26 @@ const attachModalListeners = (data) => {
    });
 };
 
-// Page Event Listener(s)
-searchBtn.addEventListener('click', () => {
-   const searchTerm = searchFld.value;
-   // clear out exisiting gallery
+// clears existing cards off page
+const clearGallery = () => {
    while (gallery.firstChild) {
       gallery.removeChild(gallery.firstChild);
    }
-   searchTerm ? filterBySearch(searchTerm) : populateGallery(usersData);
-});
+};
+// assigns value in searchField as argument to filtered search function
+const assignSearch = () => searchFld.value ? filterBySearch(searchFld.value) 
+   : populateGallery(usersData);
+
+const clearAndAssign = () => {
+   clearGallery();
+   assignSearch();
+};
+
+// Page Event Listener(s)
+// user clicks on search button
+searchBtn.addEventListener('click', clearAndAssign);
+// user types each character
+searchFld.addEventListener('keyup', clearAndAssign);
 
 gallery.addEventListener('click', e => {
    const isCard = e.target.className.substring(0, 4) === 'card';
