@@ -32,9 +32,6 @@ const filterBySearch = (search) => {
    search = search.toLowerCase();
    filteredUsers = usersData.filter(user => {
       let userName = `${user.name.first} ${user.name.last}`.toLowerCase();
-      // const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
-      // const isMatch = user.name.first.toLowerCase() === search ||
-      //    user.name.last.toLowerCase() === search || fullName === search;
       return userName.includes(search);
    });
    if (filteredUsers.length > 0) {
